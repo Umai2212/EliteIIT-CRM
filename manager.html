@@ -222,15 +222,15 @@ const ROLE_PAGE = { Admin: 'admin.html', Manager: 'manager.html', Salesperson: '
 
 function guardSession(expectedRole) {
   const s = getSession();
-  if (!s) { window.location.href = 'login.html'; return null; }
+  if (!s) { window.location.href = 'index.html'; return null; }
   if (expectedRole && s.role !== expectedRole) {
-    window.location.href = ROLE_PAGE[s.role] || 'login.html';
+    window.location.href = ROLE_PAGE[s.role] || 'index.html';
     return null;
   }
   return s;
 }
 
-function logout() { clearSession(); window.location.href = 'login.html'; }
+function logout() { clearSession(); window.location.href = 'index.html'; }
 
 function showToast(msg, isError) {
   const t = document.getElementById('toast');
@@ -259,7 +259,7 @@ async function apiCall(action, payload) {
   });
   const json = await res.json();
   if (json.error) {
-    if (json.error.indexOf('log in') !== -1) { clearSession(); window.location.href = 'login.html'; }
+    if (json.error.indexOf('log in') !== -1) { clearSession(); window.location.href = 'index.html'; }
     throw new Error(json.error);
   }
   return json.data !== undefined ? json.data : json;
