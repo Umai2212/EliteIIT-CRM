@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0" name="viewport"/>
+<title>Salesperson — Elite IIT Lead CRM</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700;800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet"/>
+<style>
+
+:root{
+  --bg:#150E2B; --surface:#221A4D; --surface-2:#2A2158; --border:#3D2E6B;
+  --purple:#7B5FC4; --purple-2:#9A82D9; --pink:#F0729E; --pink-2:#F5A3C7;
+  --text:#F3F0FA; --text-dim:#B9AEDA;
+  --green:#3FBE7A; --green-bg:#0F2A1D; --red:#F0837C; --red-bg:#3A1720;
+  --blue:#6FC3E8; --blue-bg:#142A3D; --amber:#E8B34E; --amber-bg:#332711;
+  --radius:18px;
+}
+*{box-sizing:border-box; margin:0; padding:0; -webkit-tap-highlight-color:transparent;}
+html,body{min-height:100%;}
+body{background:var(--bg); color:var(--text); font-family:'Inter',sans-serif; line-height:1.5;
+  -webkit-font-smoothing:antialiased; padding-bottom:70px;}
+h1,h2,h3,h4{font-family:'Playfair Display',serif; font-weight:700; letter-spacing:-0.01em; color:var(--text);}
+a{color:inherit; text-decoration:none;}
+.texture{position:fixed; inset:0; pointer-events:none; z-index:0;
+  background:radial-gradient(ellipse at 15% 10%, rgba(123,95,196,0.16), transparent 55%),
+             radial-gradient(ellipse at 85% 90%, rgba(240,114,158,0.10), transparent 55%);}
+
+.brand{font-family:'Playfair Display',serif; font-weight:700; font-size:19px;}
+.brand .grad{background:linear-gradient(135deg,var(--pink-2),var(--purple-2));
+  -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent;}
+
+/* ---------- Top bar + tabs ---------- */
+.topbar{display:flex; align-items:center; justify-content:space-between; padding:14px 18px;
+  background:var(--surface); border-bottom:1px solid var(--border); position:sticky; top:0; z-index:20;}
+.topbar .who{font-size:11.5px; color:var(--text-dim); text-align:right; line-height:1.3;}
+.topbar .who b{color:var(--pink-2);}
+.logout-btn{background:none; border:1px solid var(--border); color:var(--text-dim); font-size:11px;
+  padding:6px 10px; border-radius:8px; margin-left:10px; cursor:pointer;}
+.logout-btn:hover{border-color:var(--pink); color:var(--pink-2);}
+
+.tabs{display:flex; background:var(--surface); border-bottom:1px solid var(--border);
+  position:sticky; top:57px; z-index:19; overflow-x:auto;}
+.tab{flex:1; text-align:center; padding:13px 8px; font-size:12.5px; font-weight:600; white-space:nowrap;
+  color:var(--text-dim); border-bottom:2px solid transparent; cursor:pointer;}
+.tab.active{color:var(--pink-2); border-bottom-color:var(--pink);}
+
+.view{position:relative; z-index:1; padding:18px 16px 30px; max-width:720px; margin:0 auto; width:100%;}
+.view.hidden{display:none;}
+
+/* ---------- Cards ---------- */
+.card{background:linear-gradient(155deg,var(--surface-2),var(--surface)); border:1px solid var(--border);
+  border-radius:var(--radius); padding:18px; margin-bottom:14px;}
+.card h3{font-size:15px; margin-bottom:10px; color:var(--pink-2);}
+
+/* ---------- Forms ---------- */
+label{display:block; font-size:11.5px; font-weight:600; color:var(--text-dim);
+  margin:14px 0 6px; text-transform:uppercase; letter-spacing:0.04em;}
+label:first-of-type{margin-top:0;}
+input, select{width:100%; padding:13px 14px; border-radius:12px; border:1px solid var(--border);
+  background:var(--bg); color:var(--text); font-family:'Inter',sans-serif; font-size:15px;}
+input:focus, select:focus{outline:none; border-color:var(--pink);}
+input::placeholder{color:#6B6591;}
+.pin-input{letter-spacing:8px; font-family:'JetBrains Mono',monospace; font-size:20px; text-align:center;}
+
+.btn{display:block; width:100%; padding:14px; border-radius:12px; border:none; font-size:14px;
+  font-weight:700; cursor:pointer; text-align:center; font-family:'Inter',sans-serif;}
+.btn-primary{background:linear-gradient(135deg,var(--purple),var(--pink)); color:#fff;}
+.btn-primary:active{opacity:0.85;}
+.btn-outline{background:transparent; border:1px solid var(--border); color:var(--text);}
+.btn-outline:active{border-color:var(--pink);}
+.btn-sm{padding:9px 12px; font-size:12.5px; width:auto; border-radius:9px;}
+.btn:disabled{opacity:0.5; pointer-events:none;}
+
+/* ---------- Stat tiles ---------- */
+.stat-grid{display:grid; grid-template-columns:repeat(2,1fr); gap:12px; margin-bottom:16px;}
+.stat-grid.cols-3{grid-template-columns:repeat(3,1fr);}
+.stat-block{background:var(--surface); border:1px solid var(--border); border-radius:14px; padding:14px; text-align:center;}
+.stat-block .big{font-family:'JetBrains Mono',monospace; font-size:22px; font-weight:600; color:var(--pink-2); margin-bottom:2px;}
+.stat-block .lbl{font-size:10.5px; color:var(--text-dim); line-height:1.3; text-transform:uppercase; letter-spacing:0.03em;}
+
+/* ---------- Lead cards / list ---------- */
+.lead-card{background:var(--surface); border:1px solid var(--border); border-radius:14px; padding:14px; margin-bottom:10px; cursor:pointer;}
+.lead-card:active{border-color:var(--pink);}
+.lead-top{display:flex; justify-content:space-between; align-items:flex-start; gap:10px; margin-bottom:6px;}
+.lead-name{font-weight:700; font-size:14.5px;}
+.lead-sub{font-size:12px; color:var(--text-dim); font-family:'JetBrains Mono',monospace;}
+.badge{display:inline-block; font-size:10.5px; font-weight:700; padding:4px 9px; border-radius:20px;
+  text-transform:uppercase; letter-spacing:0.03em; white-space:nowrap;}
+.badge-new{background:var(--blue-bg); color:var(--blue);}
+.badge-progress{background:var(--amber-bg); color:var(--amber);}
+.badge-converted{background:var(--green-bg); color:var(--green);}
+.badge-dropped{background:var(--red-bg); color:var(--red);}
+.lead-meta{display:flex; gap:14px; flex-wrap:wrap; font-size:11.5px; color:var(--text-dim); margin-top:6px;}
+
+/* ---------- Modal ---------- */
+.modal-backdrop{position:fixed; inset:0; background:rgba(10,6,22,0.7); z-index:100; display:none;
+  align-items:flex-end; justify-content:center;}
+.modal-backdrop.open{display:flex;}
+.modal{background:var(--surface); border-top:1px solid var(--border); border-radius:20px 20px 0 0;
+  width:100%; max-width:520px; max-height:88vh; overflow-y:auto; padding:22px 18px 26px; position:relative; z-index:1;}
+.modal h3{margin-bottom:4px;}
+.modal .sub{font-size:12px; color:var(--text-dim); margin-bottom:16px; font-family:'JetBrains Mono',monospace;}
+.modal-close{position:absolute; top:16px; right:16px; width:30px; height:30px; border-radius:8px;
+  background:var(--surface-2); border:1px solid var(--border); color:var(--text-dim); font-size:16px;
+  display:flex; align-items:center; justify-content:center; cursor:pointer;}
+.action-row{display:flex; gap:8px; flex-wrap:wrap; margin-top:14px;}
+.action-row .btn{width:auto; flex:1;}
+
+/* ---------- Tables ---------- */
+table.data-table{width:100%; border-collapse:collapse; font-size:12.5px; margin-bottom:6px;}
+table.data-table th{text-align:left; padding:9px 8px; color:var(--purple-2); font-weight:600; font-size:10.5px;
+  text-transform:uppercase; letter-spacing:.03em; border-bottom:1px solid var(--border);}
+table.data-table td{padding:9px 8px; border-bottom:1px solid var(--border); color:var(--text);}
+table.data-table tr:last-child td{border-bottom:none;}
+.num-cell{font-family:'JetBrains Mono',monospace; text-align:right;}
+
+/* ---------- Callouts / toasts ---------- */
+.callout{display:flex; gap:10px; align-items:flex-start; padding:13px 15px; border-radius:12px; font-size:12.5px; margin-bottom:12px;}
+.callout.blue{background:var(--blue-bg); border:1px solid #2A5578; color:#CFE9F7;}
+.callout.red{background:var(--red-bg); border:1px solid #7A3038; color:#F7D4D2;}
+.callout.green{background:var(--green-bg); border:1px solid #2E6B44; color:#CFEEDC;}
+.callout.amber{background:var(--amber-bg); border:1px solid #6B5324; color:#F5E3BE;}
+
+.toast{position:fixed; bottom:16px; left:50%; transform:translateX(-50%); z-index:200;
+  background:var(--surface-2); border:1px solid var(--border); color:var(--text); padding:12px 18px;
+  border-radius:12px; font-size:13px; max-width:88vw; text-align:center; box-shadow:0 8px 24px rgba(0,0,0,0.4);
+  display:none;}
+.toast.error{border-color:var(--red);}
+.toast.show{display:block;}
+
+.empty-state{text-align:center; padding:40px 16px; color:var(--text-dim); font-size:13px;}
+.spinner{width:22px; height:22px; border-radius:50%; border:3px solid var(--border); border-top-color:var(--pink);
+  animation:spin .8s linear infinite; margin:24px auto;}
+@keyframes spin{to{transform:rotate(360deg);}}
+
+</style>
+</head>
+<body>
+<div class="texture"></div>
+
+<div class="topbar">
+  <div class="brand" style="font-size:16px;">Elite <span class="grad">IIT</span></div>
+  <div style="display:flex; align-items:center;">
+    <div class="who">Logged in as<br/><b id="whoName">—</b></div>
+    <button class="logout-btn" onclick="logout()">Log out</button>
+  </div>
+</div>
+<div class="tabs">
+  <div class="tab active" data-tab="leads">My Leads</div>
+  <div class="tab" data-tab="add">Add Lead</div>
+  <div class="tab" data-tab="dash">My Dashboard</div>
+</div>
+
+<div class="view" id="view-leads">
+  <div id="leadsList"><div class="spinner"></div></div>
+</div>
+
+<div class="view hidden" id="view-add">
+  <div class="card">
+    <h3>Add a new lead</h3>
+    <label for="addName">Name</label>
+    <input id="addName" type="text" placeholder="Student name"/>
+    <label for="addPhone">Phone</label>
+    <input id="addPhone" type="tel" inputmode="numeric" placeholder="10-digit number"/>
+    <label for="addCourse">Course</label>
+    <select id="addCourse"><option value="">Select course</option></select>
+    <label for="addSource">Lead source</label>
+    <select id="addSource"><option value="">Select source</option></select>
+    <label for="addBranch">Branch</label>
+    <select id="addBranch"><option value="">Select branch</option></select>
+    <div id="dupWarning" class="callout amber" style="display:none; margin-top:14px;"></div>
+    <button class="btn btn-primary" id="addLeadBtn" style="margin-top:18px;">Add lead</button>
+  </div>
+</div>
+
+<div class="view hidden" id="view-dash">
+  <div id="dashContent"><div class="spinner"></div></div>
+</div>
+
+<!-- Lead detail modal -->
+<div class="modal-backdrop" id="leadModalBackdrop">
+  <div class="modal">
+    <div class="modal-close" onclick="closeLeadModal()">&times;</div>
+    <h3 id="modalName">—</h3>
+    <div class="sub" id="modalMeta">—</div>
+
+    <label for="modalStatus">Update status</label>
+    <select id="modalStatus"></select>
+
+    <label for="modalFee">Total fee (₹)</label>
+    <input id="modalFee" type="number" inputmode="numeric" placeholder="e.g. 25000"/>
+    <label for="modalFeeCollected">Fee collected (₹)</label>
+    <input id="modalFeeCollected" type="number" inputmode="numeric" placeholder="e.g. 25000"/>
+
+    <div class="action-row">
+      <button class="btn btn-outline btn-sm" id="modalClaimBtn">Claim lead</button>
+      <button class="btn btn-outline btn-sm" id="modalCallBtn">Log another call</button>
+      <button class="btn btn-outline btn-sm" id="modalWalkinBtn">Mark walk-in</button>
+    </div>
+    <div class="action-row">
+      <button class="btn btn-primary" id="modalSaveBtn">Save updates</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+<script>
+
+// ====== CONFIG — paste your Apps Script Web App URL here after deploying ======
+const API_URL = "https://script.google.com/macros/s/AKfycbxINnhUeoBoeEnKXQbk-ZLq5FWzDkRoJoPO-U6_N7snL_3ywZHA4Pxc6NppyVsQeKoKLQ/exec";
+// ================================================================================
+
+function getSession() {
+  try { return JSON.parse(localStorage.getItem('elitecrm_session') || 'null'); }
+  catch (e) { return null; }
+}
+function saveSession(s) { localStorage.setItem('elitecrm_session', JSON.stringify(s)); }
+function clearSession() { localStorage.removeItem('elitecrm_session'); }
+
+const ROLE_PAGE = { Admin: 'admin.html', Manager: 'manager.html', Salesperson: 'salesperson.html' };
+
+function guardSession(expectedRole) {
+  const s = getSession();
+  if (!s) { window.location.href = 'login.html'; return null; }
+  if (expectedRole && s.role !== expectedRole) {
+    window.location.href = ROLE_PAGE[s.role] || 'login.html';
+    return null;
+  }
+  return s;
+}
+
+function logout() { clearSession(); window.location.href = 'login.html'; }
+
+function showToast(msg, isError) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'toast show' + (isError ? ' error' : '');
+  clearTimeout(window._toastTimer);
+  window._toastTimer = setTimeout(() => t.classList.remove('show'), 3200);
+}
+
+/**
+ * Calls the Apps Script backend. Sends Content-Type: text/plain to avoid a
+ * CORS preflight (Apps Script Web Apps can't answer OPTIONS requests) — the
+ * body is still JSON, parsed server-side in doPost().
+ */
+async function apiCall(action, payload) {
+  const session = getSession();
+  const body = {
+    action,
+    payload: payload || {},
+    session: session ? { name: session.name, pin: session.pin } : null
+  };
+  const res = await fetch(API_URL, {
+    method: 'POST',
+    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+    body: JSON.stringify(body)
+  });
+  const json = await res.json();
+  if (json.error) {
+    if (json.error.indexOf('log in') !== -1) { clearSession(); window.location.href = 'login.html'; }
+    throw new Error(json.error);
+  }
+  return json.data !== undefined ? json.data : json;
+}
+
+function fmtMoney(n) {
+  n = Number(n) || 0;
+  return '₹' + n.toLocaleString('en-IN');
+}
+
+function statusBadgeClass(status) {
+  if (!status) return 'badge-new';
+  if (status === 'New') return 'badge-new';
+  if (['Not Looking', 'Dropped', 'Not Reachable'].indexOf(status) !== -1) return 'badge-dropped';
+  if (['Converted', 'Admission Made', 'Fees Half Paid', 'Fees Full Paid'].indexOf(status) !== -1) return 'badge-converted';
+  return 'badge-progress';
+}
+
+
+let SESSION, LISTS, CURRENT_LEADS = [], ACTIVE_LEAD_ID = null;
+
+(async function init() {
+  SESSION = guardSession('Salesperson');
+  if (!SESSION) return;
+  document.getElementById('whoName').textContent = SESSION.name + ' · ' + SESSION.branch;
+  setupTabs();
+  await loadLists();
+  await loadLeads();
+})();
+
+function setupTabs() {
+  document.querySelectorAll('.tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.view').forEach(v => v.classList.add('hidden'));
+      tab.classList.add('active');
+      document.getElementById('view-' + tab.dataset.tab).classList.remove('hidden');
+      if (tab.dataset.tab === 'dash') loadDashboard();
+    });
+  });
+}
+
+async function loadLists() {
+  try {
+    LISTS = await apiCall('getDropdownLists', {});
+    fillSelect('addCourse', LISTS.courses);
+    fillSelect('addSource', LISTS.sources);
+    fillSelect('addBranch', LISTS.branches, SESSION.branch);
+    fillSelect('modalStatus', LISTS.statuses);
+  } catch (e) { showToast(e.message, true); }
+}
+
+function fillSelect(id, values, selected) {
+  const sel = document.getElementById(id);
+  const placeholder = sel.options.length && sel.options[0].value === '' ? sel.options[0].outerHTML : '';
+  sel.innerHTML = placeholder + values.map(v => `<option value="${v}" ${v===selected?'selected':''}>${v}</option>`).join('');
+}
+
+async function loadLeads() {
+  const box = document.getElementById('leadsList');
+  box.innerHTML = '<div class="spinner"></div>';
+  try {
+    CURRENT_LEADS = await apiCall('getLeadsForUser', {});
+    if (!CURRENT_LEADS.length) { box.innerHTML = '<div class="empty-state">No leads yet.</div>'; return; }
+    box.innerHTML = CURRENT_LEADS.map(leadCardHtml).join('');
+    box.querySelectorAll('.lead-card').forEach(el => {
+      el.addEventListener('click', () => openLeadModal(el.dataset.id));
+    });
+  } catch (e) { box.innerHTML = '<div class="empty-state">Could not load leads.</div>'; showToast(e.message, true); }
+}
+
+function leadCardHtml(l) {
+  return `<div class="lead-card" data-id="${l['Lead ID']}">
+    <div class="lead-top">
+      <div>
+        <div class="lead-name">${l['Name']}</div>
+        <div class="lead-sub">${l['Phone']}</div>
+      </div>
+      <span class="badge ${statusBadgeClass(l['Status'])}">${l['Status'] || 'New'}</span>
+    </div>
+    <div class="lead-meta">
+      <span>${l['Course'] || '—'}</span>
+      <span>${l['Lead Source'] || '—'}</span>
+      <span>${l['Branch'] || '—'}</span>
+      <span>${l['Claimed By'] ? 'Claimed: ' + l['Claimed By'] : 'Unclaimed'}</span>
+    </div>
+  </div>`;
+}
+
+function openLeadModal(leadId) {
+  const l = CURRENT_LEADS.find(x => x['Lead ID'] === leadId);
+  if (!l) return;
+  ACTIVE_LEAD_ID = leadId;
+  document.getElementById('modalName').textContent = l['Name'];
+  document.getElementById('modalMeta').textContent = leadId + ' · ' + l['Phone'] + ' · ' + (l['Course'] || '—');
+  document.getElementById('modalStatus').value = l['Status'] || '';
+  document.getElementById('modalFee').value = l['Total Fee'] || '';
+  document.getElementById('modalFeeCollected').value = l['Fee Collected'] || '';
+  document.getElementById('modalClaimBtn').style.display = l['Claimed By'] ? 'none' : 'block';
+  document.getElementById('leadModalBackdrop').classList.add('open');
+}
+function closeLeadModal() { document.getElementById('leadModalBackdrop').classList.remove('open'); ACTIVE_LEAD_ID = null; }
+
+document.getElementById('modalClaimBtn').addEventListener('click', async () => {
+  try { await apiCall('claimLead', { leadId: ACTIVE_LEAD_ID }); showToast('Lead claimed.'); closeLeadModal(); await loadLeads(); }
+  catch (e) { showToast(e.message, true); }
+});
+document.getElementById('modalCallBtn').addEventListener('click', async () => {
+  try { await apiCall('logAnotherCall', { leadId: ACTIVE_LEAD_ID }); showToast('Call logged.'); await loadLeads(); }
+  catch (e) { showToast(e.message, true); }
+});
+document.getElementById('modalWalkinBtn').addEventListener('click', async () => {
+  try { await apiCall('markWalkIn', { leadId: ACTIVE_LEAD_ID }); showToast('Marked as walk-in — pending manager approval.'); closeLeadModal(); await loadLeads(); }
+  catch (e) { showToast(e.message, true); }
+});
+document.getElementById('modalSaveBtn').addEventListener('click', async () => {
+  const status = document.getElementById('modalStatus').value;
+  const totalFee = document.getElementById('modalFee').value;
+  const feeCollected = document.getElementById('modalFeeCollected').value;
+  try {
+    if (status) await apiCall('updateStatus', { leadId: ACTIVE_LEAD_ID, status });
+    if (totalFee || feeCollected) await apiCall('setAdmission', { leadId: ACTIVE_LEAD_ID, totalFee, feeCollected });
+    showToast('Saved.'); closeLeadModal(); await loadLeads();
+  } catch (e) { showToast(e.message, true); }
+});
+
+document.getElementById('addPhone').addEventListener('blur', async (e) => {
+  const phone = e.target.value.trim();
+  const box = document.getElementById('dupWarning');
+  box.style.display = 'none';
+  if (!phone) return;
+  try {
+    const res = await apiCall('checkDuplicatePhone', { phone });
+    if (res.duplicate) {
+      box.textContent = 'Already a lead with this number: ' + res.leads.map(l => l.name + ' (' + l.status + (l.claimedBy ? ', ' + l.claimedBy : ', unclaimed') + ')').join(', ');
+      box.style.display = 'flex';
+    }
+  } catch (e) {}
+});
+
+document.getElementById('addLeadBtn').addEventListener('click', async () => {
+  const name = document.getElementById('addName').value.trim();
+  const phone = document.getElementById('addPhone').value.trim();
+  const course = document.getElementById('addCourse').value;
+  const source = document.getElementById('addSource').value;
+  const branch = document.getElementById('addBranch').value;
+  if (!name || !phone || !branch) { showToast('Name, phone, and branch are required.', true); return; }
+  const btn = document.getElementById('addLeadBtn');
+  btn.disabled = true; btn.textContent = 'Adding...';
+  try {
+    await apiCall('addLead', { name, phone, course, source, branch });
+    showToast('Lead added.');
+    document.getElementById('addName').value = '';
+    document.getElementById('addPhone').value = '';
+    document.getElementById('dupWarning').style.display = 'none';
+    document.querySelector('.tab[data-tab="leads"]').click();
+    await loadLeads();
+  } catch (e) { showToast(e.message, true); }
+  finally { btn.disabled = false; btn.textContent = 'Add lead'; }
+});
+
+async function loadDashboard() {
+  const box = document.getElementById('dashContent');
+  box.innerHTML = '<div class="spinner"></div>';
+  try {
+    const s = await apiCall('getMyStats', {});
+    box.innerHTML = `
+      <div class="stat-grid cols-3">
+        <div class="stat-block"><div class="big">${s.leadsAssigned}</div><div class="lbl">Leads assigned</div></div>
+        <div class="stat-block"><div class="big">${s.callsMade}</div><div class="lbl">Calls made</div></div>
+        <div class="stat-block"><div class="big">${s.conversions}</div><div class="lbl">Conversions</div></div>
+        <div class="stat-block"><div class="big">${s.admissions}</div><div class="lbl">Admissions</div></div>
+        <div class="stat-block"><div class="big">${s.walkIns}</div><div class="lbl">Walk-ins</div></div>
+        <div class="stat-block"><div class="big">${fmtMoney(s.revenueCollected)}</div><div class="lbl">Revenue collected</div></div>
+      </div>`;
+  } catch (e) { box.innerHTML = '<div class="empty-state">Could not load dashboard.</div>'; showToast(e.message, true); }
+}
+
+</script>
+</body>
+</html>
