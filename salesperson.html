@@ -301,9 +301,9 @@ function statusBadgeClass(status) {
 let SESSION, LISTS, CURRENT_LEADS = [], ACTIVE_LEAD_ID = null;
 
 (async function init() {
-  SESSION = guardSession('Manager');
+  SESSION = guardSession('Salesperson');
   if (!SESSION) return;
-  document.getElementById('whoName').textContent = SESSION.name + ' · ' + SESSION.branch + ' (Manager)';
+  document.getElementById('whoName').textContent = SESSION.name + ' · ' + SESSION.branch + ' (Salesperson)';
   setupTabs();
   await loadLists();
   await loadLeads();
